@@ -1,14 +1,14 @@
 #include "url_parser.hpp"
-#include <crails/params.hpp>
+#include <crails/context.hpp>
 #include <crails/url.hpp>
 
 using namespace std;
 using namespace Crails;
 
-void RequestUrlParser::operator()(Connection& connection, BuildingResponse&, Params& params, function<void(RequestParser::Status)> callback) const
+void RequestUrlParser::operator()(Context& context, function<void(RequestParser::Status)> callback) const
 {
   {
-    const auto&  request    = connection.get_request();
+    const auto&  request    = context.connection->get_request();
     const string destination(request.target());
     const char*  get_params = strrchr(destination.c_str(), '?');
     string       uri = destination;
@@ -16,7 +16,7 @@ void RequestUrlParser::operator()(Connection& connection, BuildingResponse&, Par
     // Setting Headers parameters
     {
       for (const auto& header : request.base())
-        params["headers"][std::string(header.name_string())] = std::string(header.value());
+        context.params["headers"][std::string(header.name_string())] = std::string(header.value());
     }
 
     // Getting get parameters
@@ -26,11 +26,11 @@ void RequestUrlParser::operator()(Connection& connection, BuildingResponse&, Par
 
       uri.erase(uri.size() - str_params.size());
       str_params.erase(0, 1);
-      cgi2params(params.as_data(), str_params);
+      cgi2params(context.params.as_data(), str_params);
     }
   
-    params["uri"]    = uri;
-    params["method"] = boost::beast::http::to_string(request.method());
+    context.params["uri"]    = uri;
+    context.params["method"] = boost::beast::http::to_string(request.method());
   }
   callback(RequestParser::Continue);
 }

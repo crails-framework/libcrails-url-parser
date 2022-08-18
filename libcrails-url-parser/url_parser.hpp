@@ -8,7 +8,7 @@ namespace Crails
   class RequestUrlParser : public RequestParser
   {
   public:
-    void operator()(Connection&, BuildingResponse&, Params&, std::function<void(RequestParser::Status)>) const override;
+    void operator()(Context&, std::function<void(RequestParser::Status)>) const override;
   };
 }
 
