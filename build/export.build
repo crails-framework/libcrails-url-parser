@@ -3,4 +3,4 @@ $out_root/
   include libcrails-url-parser/
 }
 
-export $out_root/crails/request_parsers/$import.target
+export $out_root/libcrails-url-parser/$import.target
